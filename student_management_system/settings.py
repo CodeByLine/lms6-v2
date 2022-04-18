@@ -108,8 +108,16 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'accounts.Account'
 
+## for console link
+# if DEBUG:
+#     EMAIL_BACKEND="django.core.mail.backends.console.EmailBackend"    
+## use with path("accounts/", include("django.contrib.auth.urls")),
+
+## for filebased
 if DEBUG:
-    EMAIL_BACKEND="django.core.mail.backends.console.EmailBackend"    # use with path("accounts/", include("django.contrib.auth.urls")),
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
