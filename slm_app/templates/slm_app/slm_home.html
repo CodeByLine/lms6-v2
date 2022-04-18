@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h1>Home at slm Level</h1>
+
+<h3>see 'notes to myself' for user info</h3>
+
+
+<p>slm_app/slm_home.html</p>
+
+{% for account in accounts %}
+{{ account }}
+{% endfor %}
+
+{% endblock %}
