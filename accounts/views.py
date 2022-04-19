@@ -10,6 +10,8 @@ from accounts.forms import (RegistrationForm,
                             AccountAuthenticationForm,
                             AccountUpdateForm)
 
+from course_catalog.models import Course
+
 def registration_view(request):
     context = {}
     if request.POST:

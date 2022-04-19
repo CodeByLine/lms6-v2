@@ -1,4 +1,6 @@
-This project is an extension of my exercise called lms5 (CustomUser - register, login, logout, password change/rest.)
+This project is an extension of my exercise called lms6 (CustomUser - register, login, logout, password change/rest.)
+
+Added "Course Catalog" in this app.
 
 This app was originally based on the series of tutorials by SuperCoder ("Python Django Student Management System, https://youtu.be/y3llbdTtam4). One version can be found on GitHub: https://github.com/hackstarsj
 
