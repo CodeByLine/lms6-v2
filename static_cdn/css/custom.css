@@ -6,7 +6,7 @@ body {
     max-width: 960px;
   }
 
-  .main{
+  main{
       min-height: 100vh;
       height: 100;
     }
@@ -14,4 +14,8 @@ body {
 
 .main {
     font-size: 3rem;
+}
+
+.form-signin {
+    max-width: 650px !important;
 }

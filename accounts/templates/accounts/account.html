@@ -3,73 +3,46 @@
 
 {% block content %}
 
-<h1>Update Account</h1>
-
-<style type="text/css">
-        .form-signin {
-        width: 100%;
-        max-width: 330px;
-        padding: 15px;
-        margin: auto;
-        }
-
-        .form-signin .form-floating:focus-within {
-        z-index: 2;
-        }
-
-        .form-signin input[type="email"] {
-        margin-bottom: -1px;
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-        }
-
-        .form-signin input[type="username"] {
-        margin-bottom: 10px;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-        }
-</style>
-
 <main class="form-signin text-cente">
-        <form class="form-signin" method="POST">
-        {% csrf_token %}
-          <img class="mb-4" src="#" alt="" width="72" height="57">
-          <h1 class="h3 mb-3 fw-normal">Update Account (<span style="color:darkgreen">LMS 6</span>)</h1>
+	<form class="form-signin" method="POST">
+	{% csrf_token %}
+	<img class="mb-4" src="#" alt="" width="72" height="57">
+	<h1 class="h3 mb-5 fw-normal">Update Account (<span style="color:darkgreen">LMS 6</span>)</h1>
 
       
-          <div class="form-floating">
-                <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus value={{account_form.initial.email}}>
-            <label for="floatingInput">Email address</label>
-          </div>
-          <div class="form-floating">
-                <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Username" required
-                value="{{account_form.initial.username}}">
-            
-            <label for="floatingUsername">Username</label>
-          </div>
+	  <div class="form-floating">
+		<input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus value={{account_form.initial.email}}>
+	    <label for="floatingInput">Email address</label>
+	  </div>
+	  <div class="form-floating">
+		<input type="text" name="username" id="inputUsername" class="form-control" placeholder="Username" required
+		value="{{account_form.initial.username}}">
+	    
+	    <label for="floatingUsername">Username</label>
+	  </div>
       
-          {% for field in account_form %}   
-                {% for field in field.errors %}     
-                    <p style="color: red;">{{ error }}</p>
-                {% endfor %}
-           {% endfor %}
+	  {% for field in account_form %}   
+		{% for field in field.errors %}     
+		    <p style="color: red;">{{ error }}</p>
+		{% endfor %}
+	   {% endfor %}
 
-                {% if account_form.non_field_errors %}
-                        <div style="color: red">
-                                <p>{{ account_form.non_field_errors }}</p>
-                        </div>
-                {% endif %}
+		{% if account_form.non_field_errors %}
+			<div style="color: red">
+				<p>{{ account_form.non_field_errors }}</p>
+			</div>
+		{% endif %}
 
-        {% if success_message %}
-        <p style="color: green; text-align: center;">{{ success_message }}</p>
-        {% endif %}
-          <button class="w-100 btn btn-lg btn-primary" type="submit">Save Changes</button>
-          
-        </form>
+	{% if success_message %}
+	<p style="color: green; text-align: center;">{{ success_message }}</p>
+	{% endif %}
+	  <button class="w-100 btn btn-lg btn-primary" type="submit">Save Changes</button>
+	  
+	</form>
 
-        <div class="d-flex flex-column">
-                <a href="{% url 'password_change' %}" class="m-auto">Change Password</a>
-        </div>
+	<div class="d-flex flex-column">
+		<a href="{% url 'password_change' %}" class="m-auto">Change Password</a>
+	</div>
       </main>
 
 {% endblock content%}

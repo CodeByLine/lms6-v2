@@ -6,12 +6,39 @@ body {
     max-width: 960px;
   }
 
-  .main{
+  main{
       min-height: 100vh;
       height: 100;
     }
 
 
 .main {
-    font-size: 3rem;
+    font-size: 2.5rem;
 }
+
+.form-signin {
+    max-width: 650px !important;
+}
+
+.form-signin {
+  width: 100%;
+  /* max-width: 330px; */
+  padding: 15px;
+  margin: auto;
+  }
+
+  .form-signin .form-floating:focus-within {
+  z-index: 2;
+  }
+
+  .form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  }
+
+  .form-signin input[type="username"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  }
