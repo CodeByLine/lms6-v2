@@ -28,7 +28,7 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
 
-     path("academics/", include("academics.urls")),
+     path("catalog/", include("course_catalog.urls")),
 
 
     # Password reset links (ref: https://github.com/django/django/blob/master/django/contrib/auth/views.py)
