@@ -6,9 +6,10 @@
 
 {% for account in accounts %}
 <h2>User: {{ account }}</h2>
-<p>Name: {{account.first_name}} {{account.last_name}}</p>
-<p>Date Joined: {{ account.date_joined }}</p>
-<p>Last Login: {{account.last_login}} </p>
+
+<p class="fs-4">Name: {{account.first_name}} {{account.last_name}}</p>
+<p class="fs-4">Date Joined: {{ account.date_joined }}</p>
+<p class="fs-4">Last Login: {{account.last_login}}</p>
 
 <p>Is SuperUser? {{ account.is_superuser}} </p>
 <p>Is Active? {{ account.is_active}} </p>
