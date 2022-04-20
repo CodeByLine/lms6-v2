@@ -5,96 +5,54 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
-from accounts.models import Account, MyAccountManager #CustomUser, CustomUserManager
+from django.contrib.auth.forms import UserCreationForm
+from accounts.models import CustomUser
+from .forms import CustomUserCreateForm, CustomUserChangeFrom
+from .models import CustomUser
 
 
-class AccountAdmin(UserAdmin):
-	list_display = ('email','username','date_joined', 'last_login', 'is_admin','is_staff')
-	search_fields = ('email','username',)
-	readonly_fields=('date_joined', 'last_login')
+# class AccountAdmin(UserAdmin):
+# 	list_display = ('email','username','date_joined', 'last_login', 'is_admin','is_staff')
+# 	search_fields = ('email','username',)
+# 	readonly_fields=('date_joined', 'last_login')
 
-	filter_horizontal = ()
-	list_filter = ()
-	fieldsets = ()
+# 	filter_horizontal = ()
+# 	list_filter = ()
+# 	fieldsets = ()
 
-    # Can add fieldsets = (
-    #   (None, {'fields': ('email','username')}),
-    #       ('Permissions', {'fields': ('is_staff', 'is_active')}),
-    #       ('Personal', {'fields': ('about)}),
-    # )
-
-# class CustomUserCreationForm(forms.ModelForm):
-#     parseString
-    # """A form for creating new users. Includes all the required
-    # fields, plus a repeated password."""
-    # password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    # password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
-    
-    # class Meta:
-    #     model = CustomUser
-    #     fields = ('email', 'date_of_birth')
-
-    # def clean_password2(self):
-    #     # Check that the two password entries match
-    #     password1 = self.cleaned_data.get("password1")
-    #     password2 = self.cleaned_data.get("password2")
-    #     if password1 and password2 and password1 != password2:
-    #         raise ValidationError("Passwords don't match")
-    #     return password2
-
-    # def save(self, commit=True):
-    #     # Save the provided password in hashed format
-    #     user = super().save(commit=False)
-    #     user.set_password(self.cleaned_data["password1"])
-    #     if commit:
-    #         user.save()
-    #     return user
+# check this out: https://stackoverflow.com/questions/28897480/create-custom-user-form
 
 
-# class CustomUserChangeForm(forms.ModelForm):
-    # pass
-    # """A form for updating users. Includes all the fields on
-    # the user, but replaces the password field with admin's
-    # disabled password hash display field.
-    # """
-    # password = ReadOnlyPasswordHashField()
+# class UserCreateForm(UserCreationForm):
 
-    # class Meta:
-    #     model = CustomUser
-    #     fields = ('email', 'password', 'date_of_birth', 'is_active', 'is_admin')
+#     class Meta:
+#         model = CustomUser
+#         fields = ('username', 'first_name' , 'last_name', )
 
 
-# class CustomUserAdmin(BaseUserAdmin):
-#     pass
-    # The forms to add and change user instances
-    # form = CustomUserChangeForm
-    # add_form = CustomUserCreationForm
+class CustomUserAdmin(UserAdmin):
+    model = CustomUser
+    add_form = CustomUserCreateForm
+    form = CustomUserChangeFrom
+    # prepopulated_fields = {'username': ('first_name' , 'last_name', )}
+    list_display = ('email', 'is_staff', 'is_active',)
+    list_filter = ('email', 'is_staff', 'is_active',)
 
-    # # The fields to be used in displaying the User model.
-    # # These override the definitions on the base UserAdmin
-    # # that reference specific fields on auth.User.
-    # list_display = ('email', 'date_of_birth', 'is_admin')
-    # list_filter = ('is_admin',)
-    # fieldsets = (
-    #     (None, {'fields': ('email', 'password')}),
-    #     ('Personal info', {'fields': ('date_of_birth',)}),
-    #     ('Permissions', {'fields': ('is_admin',)}),
-    # )
-    # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
-    # overrides get_fieldsets to use this attribute when creating a user.
-    # add_fieldsets = (
-    #     (None, {
-    #         'classes': ('wide',),
-    #         'fields': ('email', 'date_of_birth', 'password1', 'password2'),
-    #     }),
-    # )
-    # search_fields = ('email',)
-    # ordering = ('email',)
-    # filter_horizontal = ()
+    fieldsets = (
+        (None, {                # 'classes': ('wide',),
+            'fields': ('email', 'first_name', 'last_name', 'user_type', 'username', 'password1', 'password2', ),
+        }),)                
 
-admin.site.register(Account, AccountAdmin)
-# Now register the new UserAdmin...
-# admin.site.register(CustomUser, CustomUserAdmin)
-# ... and, since we're not using Django's built-in permissions,
-# unregister the Group model from admin.
-# admin.site.unregister(Group)
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',), # css
+            'fields': ('email', 'first_name', 'last_name', 'username', 'password1', 'password2'),
+        }),
+        
+    )
+
+
+admin.site.register(CustomUser, CustomUserAdmin)
+# Must create blank UserModel class and registering here in admin.py. 
+# Otherwise, passwords will not be encrypted.
+

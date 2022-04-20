@@ -1,168 +1,229 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.contrib.auth.models import (
-	BaseUserManager, AbstractBaseUser
-)
-class MyAccountManager(BaseUserManager):
-	def create_user(self, email, username, password=None):
-		if not email:
-			raise ValueError('Users must have an email address')
-		if not username:
-			raise ValueError('Users must have a username')
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils import timezone
+from django.utils.text import slugify
+from django.urls import reverse
+from accounts.managers import CustomUserManager
+from django.utils.translation import gettext as _
 
-		user = self.model(
-			email=self.normalize_email(email),
-			username=username,
-		)
+class SessionYearModel(models.Model):
+    id = models.AutoField(primary_key=True)
+    session_start_year = models.DateField()
+    session_end_year = models.DateField()
+    objects = models.Manager()
 
-		user.set_password(password)
-		user.save(using=self._db)
-		return user
+    def get_absolute_url(self):
+        return reverse('session_detail', kwargs={'pk': self.pk})
 
-	def create_superuser(self, email, username, password):
-		user = self.create_user(
-			email=self.normalize_email(email),
-			password=password,
-			username=username,
-		)
-		user.is_admin = True
-		user.is_staff = True
-		user.is_superuser = True
-		user.save(using=self._db)
-		return user
-
-		
-class Account(AbstractBaseUser):
-	email = models.EmailField(
-		verbose_name ='email address',
-		max_length = 255,
-		unique = True,
-	)
-	username = models.CharField(max_length=30, unique=True)
-	date_joined	= models.DateTimeField(verbose_name='date joined', auto_now_add=True)
-	last_login	= models.DateTimeField(verbose_name='last login', auto_now=True)
-	is_admin	= models.BooleanField(default=False)
-	is_active	= models.BooleanField(default=True)
-	is_staff	= models.BooleanField(default=False)
-	is_superuser = models.BooleanField(default=False)
-	first_name  = models.CharField(max_length=30)
-	last_name  = models.CharField(max_length=30)
+# Create your models here.
 
 
-	USERNAME_FIELD = 'email' # use email instead of username for login 
-	REQUIRED_FIELDS = ['username'] #required for login
+class CustomUser(AbstractUser):
+    user_type_choice = ((1, "HOD"), (2, "Staff"), (3, "Student"))
+    # user_type = models.CharField(default=1, choices=user_type_data, max_length=10)
+    user_type = models.PositiveSmallIntegerField(default=1, choices=user_type_choice)
 
-	objects = MyAccountManager()
+# https://testdriven.io/blog/django-custom-user-model/
+    email = models.EmailField(_('email address'), unique=True)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
 
-	def __str__(self):
-		return self.email + "  |  " + " Username: " + self.username
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    objects = CustomUserManager()
 
-	# # For checking permissions. to keep it simple all admin have ALL permissons
-	def has_perm(self, perm, obj=None):
-		return self.is_admin
+    def __str__(self):
+        return self.email
 
-	# # Does this user have permission to view this app? (ALWAYS YES FOR SIMPLICITY)
-	def has_module_perms(self, app_label):
-		return True
-	
-
-
-class CustomUserManager(BaseUserManager):
-	pass
-#     def create_user(self, email, password=None):
-#         """
-#         Creates and saves a User with the given email, date of
-#         birth and password.
-#         """
-#         if not email:
-#             raise ValueError('Users must have an email address')
-#         # username = self.model.normalize_username(username)
-#         user = self.model(
-#             # username=username,
-#             email=self.normalize_email(email),
-#             # date_of_birth=date_of_birth,
-#         )
-
-#         user.set_password(password)
-#         user.save(using=self._db)
-#         return user
-
-#     def create_superuser(self, email, password=None):
-#         """
-#         Creates and saves a superuser with the given email, date of
-#         birth and password.
-#         """
-#         user = self.create_user(
-#             email,
-#             password=password,
-	
-#         )
-#         user.is_admin = True
-#         user.save(using=self._db)
-#         return user
+class AdminHOD(models.Model):
+    id = models.AutoField(primary_key=True)
+    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
 
 
-class CustomUser(AbstractBaseUser):
-	pass
-#     email = models.EmailField(
-#         verbose_name='email address',
-#         max_length=255,
-#         unique=True,
-#     )
-#     id = models.AutoField(primary_key=True)
-#     date_of_birth = models.DateField(blank=True)
-#     is_active = models.BooleanField(default=True)
-#     is_admin = models.BooleanField(default=False)
-#     first_name = models.CharField(max_length=55, blank=True)
-#     last_name = models.CharField(max_length=55, blank=True)
-#     address = models.TextField(blank=True)
-#     username = models.CharField(max_length=55)
+class Staff(models.Model):
+    id = models.AutoField(primary_key=True)
+    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user_type = "Staff"
+    # is_staff = models.BooleanField(default=True)
+    email = models.EmailField()
+    address = models.TextField(blank=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    note = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
 
-#     objects = CustomUserManager()
-
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = []
-
-#     def __str__(self):
-#         return self.email
-
-#     def has_perm(self, perm, obj=None):
-#         "Does the user have a specific permission?"
-#         # Simplest possible answer: Yes, always
-#         return True
-
-#     def has_module_perms(self, app_label):
-#         "Does the user have permissions to view the app `app_label`?"
-#         # Simplest possible answer: Yes, always
-#         return True
-	
-#     def get_full_name(self):
-#         return f"{self._first_name} {self._last_name}"
-
-#     @property
-#     def is_staff(self):
-#         "Is the user a member of staff?"
-#         # Simplest possible answer: All admins are staff
-#         return self.is_admin
-
-# class AdminHOD(CustomUser):
-#     # id = models.AutoField(primary_key=True)
-#     # admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-#     # created_at = models.DateTimeField(auto_now_add=True)
-#     # updated_at = models.DateTimeField(auto_now_add=True)
-
-#     objects = models.Manager()
+    def get_absolute_url(self):
+        return reverse('staff_detail', kwargs={'pk': self.pk})
 
 
-# class Staff(models.Model):
-#     id = models.AutoField(primary_key=True)
-#     admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-#     email = models.EmailField()
-#     address = models.TextField(blank=True)
-#     date_joined = models.DateTimeField(auto_now_add=True)
-#     note = models.TextField(blank=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now_add=True)
-#     objects = models.Manager()
 
-#     def get_absolute_url(self):
-#         return reverse('staff_detail', kwargs={'pk': self.pk})
+class Course(models.Model):
+    id = models.AutoField(primary_key=True)
+    course_name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+
+    def __str__(self):
+        return f'{self.course_name}'
+
+    def get_absolute_url(self):
+        return reverse('course_detail', kwargs={'pk': self.pk})
+
+
+class Subject(models.Model):
+    id = models.AutoField(primary_key=True)
+    subject_name = models.CharField(max_length=255)
+    course_id = models.ForeignKey(Course, on_delete=models.CASCADE, default=1, related_name='course_subject')
+    staff_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1, related_name='staff_subject')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+
+    def __str__(self):
+        return f'{self.subject_name}'
+    
+    def get_absolute_url(self):
+        return reverse('course_detail', kwargs={'pk': self.pk})
+
+
+class Student(models.Model):
+    id = models.AutoField(primary_key=True)
+    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    email = models.EmailField()
+    gender = models.CharField(max_length=255, blank=True)
+    profile_pic = models.FileField(blank=True)
+    address = models.TextField(blank=True)
+    course_id = models.ForeignKey(Course, on_delete=models.DO_NOTHING, default=1, related_name='course_student')
+    session_year_id = models.ForeignKey(SessionYearModel, on_delete=models.CASCADE, related_name='session_student')
+    note = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+
+    # def save(self, *args, **kwargs):
+    #     self.slug = slugify(self.username)
+    #     super(Student, self).save(*args, **kwargs)
+    def get_absolute_url(self):
+        return reverse('course_detail', self.id)
+
+
+class Attendance(models.Model):
+    id = models.AutoField(primary_key=True)
+    subject_id = models.ForeignKey(Subject, on_delete=models.DO_NOTHING, related_name='subject_attendance')
+    attendance_date = models.DateField(auto_now_add=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    session_year_id = models.ForeignKey(SessionYearModel, on_delete=models.CASCADE, related_name='session_attendance')
+    objects = models.Manager()
+
+
+class AttendanceReport(models.Model):
+    id = models.AutoField(primary_key=True)
+    student_id = models.ForeignKey(Student, on_delete=models.DO_NOTHING, related_name='student_attendance_report')
+    attendance_id = models.ForeignKey(Attendance, on_delete=models.CASCADE)
+    status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+
+
+class LeaveReportStudent(models.Model):
+    id = models.AutoField(primary_key=True)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student_leave_report')
+    leave_date = models.CharField(max_length=255)
+    leave_message = models.TextField()
+    leave_status = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+
+
+class LeaveReportStaff(models.Model):
+    id = models.AutoField(primary_key=True)
+    staff_id = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='staff_leave_report')
+    leave_date = models.CharField(max_length=255)
+    leave_message = models.TextField()
+    leave_status = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+
+
+class FeedBackStudent(models.Model):
+    id = models.AutoField(primary_key=True)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student_feedback')
+    feedback = models.TextField()
+    feedback_reply = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+
+
+class FeedBackStaff(models.Model):
+    id = models.AutoField(primary_key=True)
+    staff_id = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='staff_feedback')
+    feedback = models.TextField()
+    feedback_reply = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+
+
+class NotificationStudent(models.Model):
+    id = models.AutoField(primary_key=True)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student_notify')
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+
+
+class NotificationStaff(models.Model):
+    id = models.AutoField(primary_key=True)
+    staff_id = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='staff_notify')
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+
+
+class StudentResult(models.Model):
+    id = models.AutoField(primary_key=True)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student_result')
+    subject_id = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='subject_student_result')
+    subject_exam_marks = models.FloatField(default=0)
+    subject_assignment_marks = models.FloatField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+
+
+@receiver(post_save, sender=CustomUser)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        if instance.user_type == 1:
+            AdminHOD.objects.create(admin=instance)
+        if instance.user_type == 2:
+            Staff.objects.create(admin=instance, address="")
+        if instance.user_type == 3:   # after 1st record, change to session_year_id=SessionYearModel.objects.get(id=1)
+            Student.objects.create(admin=instance, course_id=Course.objects.get(id=1), session_year_id=SessionYearModel.objects.get(id=1), address="", profile_pic="", gender="")
+
+
+@receiver(post_save, sender=CustomUser)
+def save_user_profile(sender, instance, **kwargs):
+    if instance.user_type == 1:
+        instance.adminhod.save()
+    if instance.user_type == 2:
+        instance.staff.save()
+    if instance.user_type == 3:
+        instance.student.save()

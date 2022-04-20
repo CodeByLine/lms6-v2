@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
     'slm_app.apps.SlmAppConfig',
-    'course_catalog.apps.CourseCatalogConfig',
+    # 'course_catalog.apps.CourseCatalogConfig',
     'crispy_forms',
     
 ]
@@ -107,7 +107,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'accounts.Account'
+# AUTH_USER_MODEL = 'accounts.Account'
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
 
 ## for console link
 # if DEBUG:
@@ -124,7 +126,7 @@ if DEBUG:
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 # AUTHENTICATION_BACKENDS = [
 #     'django.contrib.auth.backends.ModelBackend',
-#     'slm_app.EmailBackEnd.EmailBackEnd',   
+#     'accounts.EmailBackEnd.EmailBackEnd',   
 # ]
 
 # EMAIL_BACKEND="django.core.mail.backends.filebased.EmailBackend"

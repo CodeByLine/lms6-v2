@@ -1,67 +1,238 @@
-# accounts/forms.py
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.contrib.auth import authenticate
-from .models import Account
+from accounts.models import Course, Subject, Student, Staff, SessionYearModel, CustomUser
 
-# https://learndjango.com/tutorials/django-custom-user-model
+# from django.forms import fields as formfields #for dateformat
+# from django.contrib.admin import widgets     #for dateformat
 
-class RegistrationForm(UserCreationForm): #built in django contrib auth
-	email = forms.EmailField(max_length=60, help_text='Required. Add a valid emaila ddress')
 
-	class Meta:
-		model = Account
-		fields = ("email", "username", "password1", "password2")
+class DateInput(forms.DateInput):
+    input_type = "date"
 
-	
-class AccountAuthenticationForm(forms.ModelForm):
 
-	password = forms.CharField(label='Password', widget=forms.PasswordInput)
+class CustomUserCreateForm(UserCreationForm):
 
-	class Meta:
-		model = Account
-		fields = ('email', 'password')
+    class Meta:
+        model = CustomUser
+        fields = UserCreationForm.Meta.fields
+        fields = ('user_type', 'username', 'email', 'first_name', 'last_name', 'subject')
+    
+    subject = forms.ModelMultipleChoiceField(
+        queryset=Subject.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
 
-	def clean(self):
-		if self.is_valid():
-			email = self.cleaned_data['email']
-			password = self.cleaned_data['password']
-			if not authenticate(email=email, password=password):
-				raise forms.ValidationError("Invalid login")
+    # def save(self, profile_callback=None):
+    #     user = super(CustomUserCreateForm, self).save(profile_callback=None)
+    #     staff= Staff.objects.get_or_create(user=user, \
+    #         user_type=self.cleaned_data['user_type'])
+    
 
-class AccountUpdateForm(forms.ModelForm):
+class CustomUserChangeFrom(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
+        model = CustomUser
+        fields = UserChangeForm.Meta.fields
 
-	class Meta:
-		model = Account
-		fields = ('email', 'username', )
 
-	def clean_email(self):
-		if self.is_valid():
-			email = self.cleaned_data['email']
-			try:
-				account = Account.objects.exclude(pk=self.instance.pk).get(email=email)
-			except Account.DoesNotExist:
-				return email
-			raise forms.ValidationError('Email "%s" is already in use.' % account)
-
-	def clean_username(self):
-		username = self.cleaned_data['username']
-		try:
-			account = Account.objects.exclude(pk=self.instance.pk).get(username=username)
-		except Account.DoesNotExist:
-			return username
-		raise forms.ValidationError('Username "%s" is already in use.' % username)
-
-	
-
-# class CustomUserCreationForm(UserCreationForm):
+# class StaffCreateForm(CustomUserCreateForm):
+#     model = Staff
+#     subject = forms.ModelMultipleChoiceField(
+#     queryset=Subject.objects.all(),
+#     widget=forms.CheckboxSelectMultiple
+#   )
 
 #     class Meta:
-#         model = CustomUser
-#         fields = ("username", "email")
+#         model = Staff
+#         # fields = '__all__'
+#         fields = ('user_type', 'username', 'email', 'first_name' , 'last_name', 'subject')
+#         # fields = StaffCreationForm.Meta.fields
+#         # fields = ('username', 'user_type')
+        
+        
 
-# class CustomUserChangeForm(UserChangeForm):
+class SessionYearModelForm(forms.ModelForm):
+    model = SessionYearModel
+    session_start_year = forms.DateField(widget=DateInput)
+    session_end_year = forms.DateField(widget=DateInput)
 
-#     class Meta:
-#         model = CustomUser
-#         fields = ("username", "email")
+
+    class Meta:
+        model = SessionYearModel
+        fields = '__all__'
+        # widgets = {
+        #     'session_start_year': forms.DateField(widget=forms.DateInput(attrs={'type': 'date'})),
+        #     'session_end_year': forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+        # }
+
+
+class StaffForm(forms.ModelForm):
+    model = Staff
+    # first_name = forms.CharField(required=True)
+    # last_name = forms.CharField(required=True)
+
+    class Meta:
+        model = Staff
+        # fields = ['first_name', 'last_name', 'email', 'address' ]
+        # exclude = ['admin']
+        fields = '__all__'
+        # widgets = {
+        #     'first_name': forms.CharField(required=True),
+        #     'last_name': forms.CharField(required=True),
+        # }
+
+
+# class AddStaffForm(forms.Form):
+#     first_name = request.POST.get('first_name')
+#     last_name = request.POST.get('last_name')
+#     username = request.POST.get('username')
+#     email = request.POST.get('email')
+#     password = request.POST.get('password')
+#     address = request.POST.get('address')
+
+#     try:
+#         user = CustomUser.objects.create_user(
+#             username=username, 
+#             password=password,
+#             email=email,
+#             first_name=first_name,
+#             last_name=last_name,
+#             # address=address,
+#             user_type=2)
+#         user.staff.address = address
+#         user.save()
+#         messages.success(request, "Staff successfully added")
+#         return HttpResponseRedirect(reverse("add_staff"))
+#     except:
+#         messages.error(request, "Failed to add staff")
+#         return HttpResponseRedirect(reverse("add_staff"))
+
+
+class StudentForm(forms.ModelForm):
+    model = Student
+
+    class Meta:
+        model = Student
+
+        fields = '__all__'
+        # widgets = {
+        #     'first_name': forms.CharField(required=True),
+        #     'last_name': forms.CharField(required=True),
+        # }
+
+
+class AddStudentForm(forms.Form):
+    email = forms.EmailField(label="Email", max_length=50, widget=forms.EmailInput(attrs={'class': 'form-control', 'autocomplete': 'off'}))
+    password = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    first_name = forms.CharField(label="First Name", max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(label="Last Name", max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    username = forms.CharField(label="Username", max_length=50, widget=forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'}))
+    address = forms.CharField(label="Address", max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    # session_year_id=SessionYearModel.objects.all()
+    courses = Course.objects.all()
+    course_list = []
+    
+    try:
+        for course in courses:
+            sml_course = (course.id, course.course_name)
+            course_list.append(sml_course)
+    except: 
+        course_list = []
+
+    session_list = []
+    try:          
+        sessions = SessionYearModel.objects.all()
+        for ses in sessions:
+            sml_session = (ses.id, str(ses.session_start_year)+" TO "+str(ses.session_end_year))
+            session_list.append(sml_session)
+    except:
+        session_list = []
+
+    gender_choice = (
+        ("Male", "Male"),
+        ("Female", "Female"),
+        ('Other', 'Other'),
+        ('Prefer not to say', 'Prefer not to say')
+    )
+
+    course = forms.ChoiceField(label="Course", choices=course_list, widget=forms.Select(attrs={"class": "form-control"}))
+    gender = forms.ChoiceField(label="Gender", choices=gender_choice, widget=forms.Select(attrs={"class": "form-control"}))
+    session_year_id = forms.ChoiceField(label="Session Year", choices=session_list, widget=forms.Select(attrs={"class": "form-control"}))
+    # session_start=forms.DateField(label="Session Start", widget=DateInput(attrs={"class":"form-control"}))
+    # session_end=forms.DateField(label="Session End", widget=DateInput(attrs={"class":"form-control"}))
+    date_joined = forms.DateField(label="Date Joined", widget=DateInput(attrs={"class": "form-control"}))
+    profile_pic = forms.FileField(label="Profile Pic", max_length=50, widget=forms.FileInput(attrs={"class": 'form-control'}), required=False)
+    note = forms.CharField(label="Note", max_length=150, widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+
+
+class EditStudentForm(forms.Form):
+    email = forms.EmailField(label="Email", max_length=50, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    first_name = forms.CharField(label="First Name", max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(label="Last Name", max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    username = forms.CharField(label="Username", max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    address = forms.CharField(label="Address", max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
+   
+    courses = Course.objects.all()
+    course_list = []
+    try:
+        for course in courses:
+            sml_course = (course.id, course.course_name)
+            course_list.append(sml_course)
+    except: 
+        course_list = []
+
+    sessions = SessionYearModel.objects.all()
+    session_list = []
+    try:               
+        for ses in sessions:
+            sml_ses = (ses.id, str(ses.session_start_year)+" TO "+str(ses.session_end_year))
+            session_list.append(sml_ses)
+            
+    except:
+        session_list = []
+
+    gender_choice = (
+        ("Male", "Male"),
+        ("Female", "Female"),
+        ('Other', 'Other'),
+        ('Prefer not to say', 'Prefer not to say')
+    )
+    
+    course = forms.ChoiceField(label="Course", choices=course_list, widget=forms.Select(attrs={'class': 'form-control'}))
+    gender = forms.ChoiceField(label="Gender", choices=gender_choice, widget=forms.Select(attrs={'class': 'form-control'}))
+    session_year_id = forms.ChoiceField(label="Session Year", choices=session_list, widget=forms.Select(attrs={"class": "form-control"}))
+    # session_start = forms.DateField(label="Session Start",widget=DateInput(attrs={"class": "form-control"}))
+    # session_end = forms.DateField(label="Session End",widget=DateInput(attrs={"class": "form-control"}))
+    date_joined = forms.DateField(label="Date Joined", widget=DateInput(attrs={"class": "form-control"}))
+    profile_pic = forms.FileField(label="Profile Pic", widget=forms.FileInput(attrs={"class": "form-control"}), required=False)
+    note = forms.CharField(label="Note", max_length=150, widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+
+class EditResultForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.staff_id = kwargs.pop("staff_id")
+        super(EditResultForm, self).__init__(*args, **kwargs)
+        subject_list = []
+        try:
+            subjects = Subject.objects.filter(staff_id=self.staff_id)
+            for subject in subjects:
+                subject_single = (subject.id, subject.subject_name)
+                subject_list.append(subject_single)
+        except:
+            subject_list = []
+        
+        self.fields['subject_id'].choices = subject_list
+
+    session_list = []
+    try:
+        sessions = SessionYearModel.objects.all()
+        for session in sessions:
+            session_single = (session.id, str(session.session_start_year)+" TO "+str(session.session_end_year))
+            session_list.append(session_single)
+    except:
+        session_list = []
+        
+    subject_id = forms.ChoiceField(label="Subject", widget=forms.Select(attrs={"class": "form-control"}))
+    session_ids = forms.ChoiceField(label="Session Year", choices=session_list,widget=forms.Select(attrs={"class": "form-control"}))
+    student_ids = forms.ChoiceField(label="Student", widget=forms.Select(attrs={"class": "form-control"}))
+    assignment_marks = forms.CharField(label="Assignment Marks", widget=forms.TextInput(attrs={"class": "form-control"}))
+    exam_marks = forms.CharField(label="Exam Marks", widget=forms.TextInput(attrs={"class": "form-control"}))
+

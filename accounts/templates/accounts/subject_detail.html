@@ -1,0 +1,53 @@
+
+{% extends 'hod_templates/base_template.html' %}
+{% load static %}
+{% block page_title %}
+Subject Detail
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">         
+              <div class="col-md-8" style="margin: 0 auto;">
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Subject ID: {{subject.id}} </h3>
+  
+                    <div class="card-tools">      <!-- search -->
+                      <div class="input-group input-group-sm" style="width: 150px;">
+                        <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+                        <div class="input-group-append">
+                          <button type="button" class="btn btn-default">
+                            <i class="fas fa-search"></i>
+                          </button>
+                        </div>
+                        
+                      </div>
+                    </div>
+                    
+                  </div>    <!-- ./card-header -->
+
+                  <div class="card-body">
+                      <h1 class="mb-5">{{subject.subject_name}} </h1>
+
+                      <h3>Taught By: {{ subject.staff_id.first_name }} {{ subject.staff_id.last_name }}
+                          <span style="font-weight: 300;"> (username: {{ subject.staff_id }},
+                              Admin ID: {{ subject.staff_id.id }}, Staff ID: {{ subject.staff_id.staff.id }})</span></h3>
+                      <br>
+
+                      <h4>This subject belongs to Course: {{ subject.course_id }} (Course ID: {{ subject.course_id.id }})</h4>
+                  <h5 class="mb-5">Created on: <span style="font-weight: 300; margin-right: 2rem;">{{subject.created_at}}</span>  Updated on: <span style="font-weight: 300;">{{subject.updated_at}}</span></h5>
+
+                    <a href="{% url 'subject_list' %}" class="btn btn-success">Go to All Subjects</a>
+                        <a href="{% url 'subject_update' subject.id %}" class="btn btn-info mx-3">Edit Subject</a>
+                            <a href="{% url 'subject_delete' subject.id %}" class="btn btn-danger">Delete Subject</a>
+                  </div>
+                </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+
+
