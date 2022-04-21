@@ -188,23 +188,10 @@ class StaffListView(ListView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class StaffCreateView(CreateView):
-    # staff = CustomUser(user_type=2)
     model = Staff
-    # subject = forms.ModelMultipleChoiceField(
-    #     queryset=Subject.objects.all(),
-    #     widget=forms.CheckboxSelectMultiple
-    #     )
-    # fields: str = '__all__'
     form_class = StaffCreateForm
     context_object_name = 'staff'
     success_url = reverse_lazy('staff_list')
-    
-    # def get_form_kwargs(self):
-    # #     """ Passes the request object to the form class.
-
-    #     kwargs = super(StaffCreateView, self).get_form_kwargs()
-    #     # # kwargs['request'] = self.request
-    #     return kwargs
 
     def get_context_data(self, **kwargs):
         kwargs['user_type'] = 'Staff'

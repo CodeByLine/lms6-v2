@@ -83,6 +83,8 @@ class Subject(models.Model):
     subject_name = models.CharField(max_length=255)
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE, default=1, related_name='course_subject')
     staff_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1, related_name='staff_subject')
+    # name = models.CharField(max_length=2, unique=True, choices=SUBJECT_CHOICES, default=MATH)
+    # https://stackoverflow.com/a/43703248/5965865
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)

@@ -2,9 +2,6 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from accounts.models import Course, Subject, Student, Staff, SessionYearModel, CustomUser
 
-# from django.forms import fields as formfields #for dateformat
-# from django.contrib.admin import widgets     #for dateformat
-
 
 class DateInput(forms.DateInput):
     input_type = "date"
@@ -23,13 +20,6 @@ class CustomUserCreateForm(UserCreationForm):
         widget=forms.CheckboxSelectMultiple
     )
 
-    
-    # def save(self, profile_callback=None):
-    #     user = super(CustomUserCreateForm, self).save(profile_callback=None)
-    #     staff= Staff.objects.get_or_create(user=user, \
-    #         user_type=self.cleaned_data['user_type'])
-    
-
 class CustomUserChangeFrom(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = CustomUser
@@ -38,33 +28,14 @@ class CustomUserChangeFrom(UserChangeForm):
 
 class StaffCreateForm(CustomUserCreateForm):
     model = Staff
-    # subject = forms.ModelMultipleChoiceField(
-    #     queryset=Subject.objects.all(),
-    #     widget=forms.CheckboxSelectMultiple )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['subject'].queryset = Subject.objects.all()
+        subject = forms.ModelMultipleChoiceField(
+        queryset=Subject.objects.all(),
+        widget=forms.CheckboxSelectMultiple)
+        # self.fields['subject'].queryset = Subject.objects.all()
         self.fields['user_type'].initial = 2
-
-
-# your meta goes here
-
-    # def form_user_type(request):
-    #     user_type = 2
-    #     return user_type
-
-    # def save(self):
-    #     user = super().save(commit=False)
-    #     user.is_staff = True
-    #     user.save()
-    #     staff = Staff.objects.create(user=user)
-        
-    #     return user
-    # def save(self, profile_callback=None):
-    #     user = super(CustomUserCreateForm, self).save(profile_callback=None)
-    #     staff= Staff.objects.get_or_create(user=user, \
-    #         user_type=self.cleaned_data['user_type'])
         
         
 class SessionYearModelForm(forms.ModelForm):
