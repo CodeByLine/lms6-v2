@@ -16,7 +16,7 @@ Edit Course Details
                   <div class="m-5"> 
                 
                   <form method="post">{% csrf_token %}
-                    <p>Are you sure you want to delete "{{ staff.staff_name }}"?</p>
+                    <p>Are you sure you want to delete "{{staff.admin.first_name}} {{staff.admin.last_name}}"?</p>
                     {{ form.as_p }}
                     <input type="submit" value="Confirm">
                 </form>

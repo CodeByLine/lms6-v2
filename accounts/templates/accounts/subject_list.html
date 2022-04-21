@@ -52,9 +52,9 @@ Manage Subjects
                         <td>{{ subject.subject_name }}</td>  
                         <td>{{ subject.course_id.id }}</td>  
                         <td>{{ subject.course_id.course_name }}</td>   
-                        <td>{{ subject.course_id.id }}</td>   
-                        <td>{{ subject.staff_id.first_name }}</td>  
-                        <td>{{ subject.staff_id.last_name }}</td>                        
+                        <td>Staff={{ subject.staff_id}}</td>   
+                        <td>{{ subject.staff_id }}</td>  
+                        <td> {{ subject.staff_id.last_name }}</td>                        
                         <td>{{ subject.created_at }}</td>                        
                         <td>{{ subject.updated_at }}</td>
                         <td> <a href="{% url 'subject_update' subject.id %}" class="btn btn-success">Edit</a>  <a href="{% url 'subject_delete' subject.id %}" class="btn btn-danger">Delete</a> <a href="{% url 'subject_detail' subject.id %}" class="btn btn-info">View</a>
