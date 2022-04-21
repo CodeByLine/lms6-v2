@@ -11,7 +11,8 @@ class DateInput(forms.DateInput):
 
 
 class CustomUserCreateForm(UserCreationForm):
-
+    # subjects = Subject.objects.all()
+    
     class Meta:
         model = CustomUser
         fields = UserCreationForm.Meta.fields
@@ -22,6 +23,7 @@ class CustomUserCreateForm(UserCreationForm):
         widget=forms.CheckboxSelectMultiple
     )
 
+    
     # def save(self, profile_callback=None):
     #     user = super(CustomUserCreateForm, self).save(profile_callback=None)
     #     staff= Staff.objects.get_or_create(user=user, \
@@ -34,22 +36,37 @@ class CustomUserChangeFrom(UserChangeForm):
         fields = UserChangeForm.Meta.fields
 
 
-# class StaffCreateForm(CustomUserCreateForm):
-#     model = Staff
-#     subject = forms.ModelMultipleChoiceField(
-#     queryset=Subject.objects.all(),
-#     widget=forms.CheckboxSelectMultiple
-#   )
+class StaffCreateForm(CustomUserCreateForm):
+    model = Staff
+    # subject = forms.ModelMultipleChoiceField(
+    #     queryset=Subject.objects.all(),
+    #     widget=forms.CheckboxSelectMultiple )
 
-#     class Meta:
-#         model = Staff
-#         # fields = '__all__'
-#         fields = ('user_type', 'username', 'email', 'first_name' , 'last_name', 'subject')
-#         # fields = StaffCreationForm.Meta.fields
-#         # fields = ('username', 'user_type')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['subject'].queryset = Subject.objects.all()
+        self.fields['user_type'].initial = 2
+
+
+# your meta goes here
+
+    # def form_user_type(request):
+    #     user_type = 2
+    #     return user_type
+
+    # def save(self):
+    #     user = super().save(commit=False)
+    #     user.is_staff = True
+    #     user.save()
+    #     staff = Staff.objects.create(user=user)
+        
+    #     return user
+    # def save(self, profile_callback=None):
+    #     user = super(CustomUserCreateForm, self).save(profile_callback=None)
+    #     staff= Staff.objects.get_or_create(user=user, \
+    #         user_type=self.cleaned_data['user_type'])
         
         
-
 class SessionYearModelForm(forms.ModelForm):
     model = SessionYearModel
     session_start_year = forms.DateField(widget=DateInput)
@@ -65,16 +82,20 @@ class SessionYearModelForm(forms.ModelForm):
         # }
 
 
-class StaffForm(forms.ModelForm):
-    model = Staff
-    # first_name = forms.CharField(required=True)
-    # last_name = forms.CharField(required=True)
+# class StaffForm(forms.ModelForm):
+#     model = Staff
+#     first_name = forms.CharField(required=True)
+#     last_name = forms.CharField(required=True)
 
-    class Meta:
-        model = Staff
-        # fields = ['first_name', 'last_name', 'email', 'address' ]
-        # exclude = ['admin']
-        fields = '__all__'
+#     class Meta:
+#         model = Staff
+#         fields = ['first_name', 'last_name', 'email', 'address', 'subject' ]
+#         # exclude = ['admin']
+#         fields = '__all__'
+#         subject = forms.ModelMultipleChoiceField(
+#         queryset=Subject.objects.all(),
+#         widget=forms.CheckboxSelectMultiple
+    # )
         # widgets = {
         #     'first_name': forms.CharField(required=True),
         #     'last_name': forms.CharField(required=True),

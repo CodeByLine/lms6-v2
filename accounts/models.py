@@ -21,9 +21,9 @@ class SessionYearModel(models.Model):
 
 
 class CustomUser(AbstractUser):
-    user_type_choice = ((1, "HOD"), (2, "Staff"), (3, "Student"))
+    user_type_data = ((1, "HOD"), (2, "Staff"), (3, "Student"))
     # user_type = models.CharField(default=1, choices=user_type_data, max_length=10)
-    user_type = models.PositiveSmallIntegerField(default=1, choices=user_type_choice)
+    user_type = models.PositiveSmallIntegerField(default=1, choices=user_type_data)
 
 # https://testdriven.io/blog/django-custom-user-model/
     email = models.EmailField(_('email address'), unique=True)

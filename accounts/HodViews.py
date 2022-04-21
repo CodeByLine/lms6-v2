@@ -6,8 +6,8 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render  # get_object_or_404
 from accounts.forms import ( AddStudentForm, CustomUserCreateForm, EditStudentForm,
-                            SessionYearModelForm, StaffForm,
-                            # StaffCreateForm,
+                            SessionYearModelForm, #StaffForm,
+                            StaffCreateForm,
                             StudentForm)
 from django.urls import reverse, reverse_lazy
 from accounts.models import (Attendance, AttendanceReport, 
@@ -195,13 +195,20 @@ class StaffCreateView(CreateView):
     #     widget=forms.CheckboxSelectMultiple
     #     )
     # fields: str = '__all__'
-    form_class = CustomUserCreateForm
+    form_class = StaffCreateForm
     context_object_name = 'staff'
     success_url = reverse_lazy('staff_list')
+    
+    # def get_form_kwargs(self):
+    # #     """ Passes the request object to the form class.
 
-    # def get_context_data(self, **kwargs):
-    #     kwargs['user_type'] = 2
-    #     return super().get_context_data(**kwargs)
+    #     kwargs = super(StaffCreateView, self).get_form_kwargs()
+    #     # # kwargs['request'] = self.request
+    #     return kwargs
+
+    def get_context_data(self, **kwargs):
+        kwargs['user_type'] = 'Staff'
+        return super().get_context_data(**kwargs)
 
 
 class StaffDetailView(DetailView):
