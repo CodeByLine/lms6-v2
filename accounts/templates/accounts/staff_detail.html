@@ -35,7 +35,10 @@ Staff Detail
                     <h1 class="my-4">{{staff.admin.first_name}} {{staff.admin.last_name}}
                     <h5>Created on: <span style="margin-right: 2rem; font-weight: 300;">{{staff.date_joined}}</span> Updated on: <span style="font-weight: 300;">{{staff.updated_at}}</span></h5>
 
-                      <h3 class="mb-5">Course: {{course_staff}} | Subject: {{ staff.admin.subject.staff_subject }}</h3>
+                      <h3 class="mt-5">Subject: {% for subject in staff.subjects.all %}
+                        {{ subject.subject_name }}
+                    {% endfor %} </h3>
+                    <h5 class="mb-5">Course: {{course_staff}} | </h5>
                      
                       <a href="{% url 'staff_list' %}" class="btn btn-success mr-3">Go to All Staff</a>  <a href="{% url 'staff_update' staff.id %}" class="btn btn-info mr-3">Edit Staff</a><a href="{% url 'staff_delete' staff.id %}" class="btn btn-danger">Delete Staff</a>
                  

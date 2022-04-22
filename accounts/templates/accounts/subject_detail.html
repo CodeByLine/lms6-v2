@@ -31,12 +31,14 @@ Subject Detail
                   <div class="card-body">
                       <h1 class="mb-5">{{subject.subject_name}} </h1>
 
-                      <h3>Taught By: {{ subject }}
-                          <span style="font-weight: 300;"> (username: {{ subject.staff_id }},
-                              Admin ID: {{ subject.staff_id.id }}, Staff ID: {{ subject.staff_id.staff.id }})</span></h3>
-                      <br>
+                      <h3>Taught By:  {% for staff in subject.staff_id.all %}
+                        {{staff }}</h3>
+                       
+                          <h5 class="mt-3 mb-5"> Staff ID: {{ staff.id }}, Admin ID: {{ staff.admin.id }}, username: {{ staff.admin.username }},</h5>
+                              {% endfor %}
+                    
 
-                      <h4>This subject belongs to Course: {{ subject.course_id }} (Course ID: {{ subject.course_id.id }})</h4>
+                      <h4 class="mb-3" >This subject belongs to Course: {{ subject.course_id }} (Course ID: {{ subject.course_id.id }})</h4>
                   <h5 class="mb-5">Created on: <span style="font-weight: 300; margin-right: 2rem;">{{subject.created_at}}</span>  Updated on: <span style="font-weight: 300;">{{subject.updated_at}}</span></h5>
 
                     <a href="{% url 'subject_list' %}" class="btn btn-success">Go to All Subjects</a>
