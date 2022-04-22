@@ -13,12 +13,12 @@ class CustomUserCreateForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = UserCreationForm.Meta.fields
-        fields = ('user_type', 'username', 'email', 'first_name', 'last_name', 'subject')
+        fields = ('user_type', 'username', 'email', 'first_name', 'last_name')
     
-    subject = forms.ModelMultipleChoiceField(
-        queryset=Subject.objects.all(),
-        widget=forms.CheckboxSelectMultiple
-    )
+    # subject = forms.ModelMultipleChoiceField(
+    #     queryset=Subject.objects.all(),
+    #     widget=forms.CheckboxSelectMultiple
+    # )
 
 class CustomUserChangeFrom(UserChangeForm):
     class Meta(UserChangeForm.Meta):
@@ -31,9 +31,9 @@ class StaffCreateForm(CustomUserCreateForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        subject = forms.ModelMultipleChoiceField(
-        queryset=Subject.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+        # subject = forms.ModelMultipleChoiceField(
+        # queryset=Subject.objects.all(),
+        # widget=forms.CheckboxSelectMultiple)
         # self.fields['subject'].queryset = Subject.objects.all()
         self.fields['user_type'].initial = 2
         
@@ -52,51 +52,28 @@ class SessionYearModelForm(forms.ModelForm):
         #     'session_end_year': forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
         # }
 
+class SubjectForm(forms.ModelForm):
+    model = Subject
 
-# class StaffForm(forms.ModelForm):
-#     model = Staff
-#     first_name = forms.CharField(required=True)
-#     last_name = forms.CharField(required=True)
-
-#     class Meta:
-#         model = Staff
-#         fields = ['first_name', 'last_name', 'email', 'address', 'subject' ]
-#         # exclude = ['admin']
-#         fields = '__all__'
-#         subject = forms.ModelMultipleChoiceField(
-#         queryset=Subject.objects.all(),
-#         widget=forms.CheckboxSelectMultiple
-    # )
+    class Meta:
+        model = Subject
+        fields = '__all__'
         # widgets = {
-        #     'first_name': forms.CharField(required=True),
-        #     'last_name': forms.CharField(required=True),
+        #     'model' : forms.TextInput(),
         # }
-
-
-# class AddStaffForm(forms.Form):
-#     first_name = request.POST.get('first_name')
-#     last_name = request.POST.get('last_name')
-#     username = request.POST.get('username')
-#     email = request.POST.get('email')
-#     password = request.POST.get('password')
-#     address = request.POST.get('address')
-
-#     try:
-#         user = CustomUser.objects.create_user(
-#             username=username, 
-#             password=password,
-#             email=email,
-#             first_name=first_name,
-#             last_name=last_name,
-#             # address=address,
-#             user_type=2)
-#         user.staff.address = address
-#         user.save()
-#         messages.success(request, "Staff successfully added")
-#         return HttpResponseRedirect(reverse("add_staff"))
-#     except:
-#         messages.error(request, "Failed to add staff")
-#         return HttpResponseRedirect(reverse("add_staff"))
+        # labels = {
+        #     'model' : 'Model'
+        # }
+    #     model = Subject
+    #     fields = '__all__'
+    
+    # staff = forms.ModelChoiceField(
+    #     queryset=Staff.objects.all()
+    #      )
+    # subject = forms.ModelChoiceField(
+    #     queryset=Subject.objects.all(), 
+    #     to_field_name="staff",
+    #     empty_label=None )
 
 
 class StudentForm(forms.ModelForm):

@@ -31,7 +31,7 @@ Subject Detail
                   <div class="card-body">
                       <h1 class="mb-5">{{subject.subject_name}} </h1>
 
-                      <h3>Taught By: {{ subject.staff_id.first_name }} {{ subject.staff_id.last_name }}
+                      <h3>Taught By: {{ subject }}
                           <span style="font-weight: 300;"> (username: {{ subject.staff_id }},
                               Admin ID: {{ subject.staff_id.id }}, Staff ID: {{ subject.staff_id.staff.id }})</span></h3>
                       <br>

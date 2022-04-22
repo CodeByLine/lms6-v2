@@ -8,7 +8,8 @@ from django.shortcuts import redirect, render  # get_object_or_404
 from accounts.forms import ( AddStudentForm, CustomUserCreateForm, EditStudentForm,
                             SessionYearModelForm, #StaffForm,
                             StaffCreateForm,
-                            StudentForm)
+                            StudentForm,
+                            SubjectForm )
 from django.urls import reverse, reverse_lazy
 from accounts.models import (Attendance, AttendanceReport, 
                             CustomUser, Course, 
@@ -164,8 +165,6 @@ class SessionYearModelDetailView(DetailView):
 class SessionYearModelUpdateView(UpdateView):
     model = SessionYearModel
     fields = ['id', 'session_start_year', 'session_end_year']
-    # template_name_suffix = '_update_form'
-    # template_name = 'slm_app/course_update.html'
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -177,10 +176,16 @@ class SessionYearModelDeleteView(DeleteView):
 # staff
 class StaffListView(ListView):
     model = Staff
-    subjects = Subject.objects.all()
+    all_staff = Staff.objects.filter(pk=1)
+    all_subjects = Subject.objects.all()
     context_object_name = 'staff_list'
 
-
+    # staff_subject=all_subjects.get(staff_id=2)
+  
+    
+    # for staff in all_staff:
+    #         staff_sub = staff.subjects
+            
 # class AddFormMixin(object):   # https://stackoverflow.com/a/60118733/5965865
 #     def __init__(self, *args, **kwargs):
 #         super(AddFormMixin, self).__init__(*args, **kwargs)
@@ -412,24 +417,32 @@ def add_student_save(request):
 class SubjectListView(ListView):
     model = Subject
     context_object_name = 'subject_list'
-    subjects = Subject.objects.all()
-    staffs = Staff.objects.all()
+    all_subjects = Subject.objects.all()
+    all_staff = Staff.objects.all()
+    
+    for staff in all_staff:
+        staff = Staff.objects.get(id=staff.id)
+        
+        
 
     def get_context_data(self, **kwargs):
-        subjects = Subject.objects.all()
-        staffs = Staff.objects.all()
+        # all_subjects = Subject.objects.all()
+        # staffs = Staff.objects.all()
         context = super(SubjectListView, self).get_context_data(**kwargs)
         return context
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SubjectCreateView(CreateView):
     model = Subject
-    fields = '__all__'
+
+    form_class = SubjectForm
+    context_object_name = 'subject'
     success_url = reverse_lazy('subject_list')
 
 
 class SubjectDetailView(DetailView):
     model = Subject
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SubjectUpdateView(UpdateView):

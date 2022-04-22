@@ -59,6 +59,9 @@ class Staff(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
 
+    def __str__(self):
+        return self.admin.first_name + " " + self.admin.last_name
+
     def get_absolute_url(self):
         return reverse('staff_detail', kwargs={'pk': self.pk})
 
@@ -115,6 +118,9 @@ class Student(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
+
+    def __str__(self):
+        return self.email
 
     # def save(self, *args, **kwargs):
     #     self.slug = slugify(self.username)
@@ -212,6 +218,17 @@ class StudentResult(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
+
+# THROUGH table
+# https://www.sankalpjonna.com/learn-django/the-right-way-to-use-a-manytomanyfield-in-django
+
+# class classroom(models.Model):
+#     id = models.AutoField(primary_key=True)
+#     student = models.ForeignKey(Student, on_delete=models.CASCADE)
+#     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+#     attendance = models.ForeignKey(Attendance, on_delete=models.CASCADE)
+#     result = models.ForeignKey(StudentResult, on_delete=models.CASCADE)
+
 
 
 @receiver(post_save, sender=CustomUser)
