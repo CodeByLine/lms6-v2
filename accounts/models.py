@@ -89,6 +89,7 @@ class Subject(models.Model):
 
     staff_id = models.ManyToManyField(Staff, related_name="subjects")
 
+
     
     # name = models.CharField(max_length=2, unique=True, choices=SUBJECT_CHOICES, default=MATH)
     # https://stackoverflow.com/a/43703248/5965865
